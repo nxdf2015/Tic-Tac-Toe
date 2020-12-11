@@ -2,6 +2,7 @@ package tictactoe;
 
 
 public class Grid {
+
     private String grid;
 
     public Grid(String init) {
@@ -15,7 +16,7 @@ public class Grid {
     public String[] rows(){
         String[] data = new String[3];
         for(int i = 0; i < 3; i++){
-            data[i] = grid.substring(i * 3, (i + 1) *3);
+            data[i] = grid.substring(i * 3, (i + 1) * 3);
         }
         return data;
     }
@@ -55,9 +56,12 @@ public class Grid {
         return false;
     }
 
-    public String getStatus(){
+    public boolean drawn() {
+        return win("X") && win("O") || (Math.abs(find(grid,'X') - find(grid,'O'))) >= 2;
+    }
 
-        if (win("X") && win("O") || (Math.abs(find(grid,'X') - find(grid,'O'))) >= 2){
+    public String getStatus(){
+        if (drawn()){
             return "Impossible";
         } else if(win("X")){
             return "X wins";
@@ -69,7 +73,6 @@ public class Grid {
         return "Game not finished";
     }
 
-
     public int find(String s, char c){
         int id = -1;
         int count = 0;
@@ -78,10 +81,33 @@ public class Grid {
             if (id != -1) {
                 count++;
             }
-
-
         }while(id != -1);
         return count;
+    }
+
+    public boolean cellIsEmpty(int row, int col){
+        row = changeOrigine(row);
+        col -= 1;
+        return grid.charAt(row * 3 + col) == '_';
+    }
+
+    public void play(int row, int col,String player){
+        row = changeOrigine(row);
+        col -= 1;
+
+        grid = grid.substring(0, row * 3 + col) + player + grid.substring(row * 3 + col + 1);
+    }
+
+    public boolean isValidPosition(int row,int col){
+        return inRange(row) && inRange(col);
+    }
+
+    private boolean inRange(int i){
+        return i > 0 && i <= 3;
+    }
+
+    private int  changeOrigine(int pos){
+        return 3 - pos;
     }
 
     @Override
@@ -89,7 +115,7 @@ public class Grid {
         String head = "-".repeat(9);
         String result = head + System.lineSeparator();
         for(int i = 0; i < 3; i++){
-            String line = String.format("| %c %c %c |", grid.charAt(3 * i), grid.charAt(3 *i + 1), grid.charAt(3 *i +2));
+            String line = String.format("| %c %c %c |", grid.charAt(3 * i), grid.charAt(3 * i + 1), grid.charAt(3 *i +2));
             result += line + System.lineSeparator();
 
         }
